@@ -1,0 +1,21 @@
+on:
+  push:
+    branches: [main]
+name: Index
+jobs:
+  packages:
+    name: Update package index
+    runs-on: ubuntu-latest
+    steps:
+      - name: ↘️ checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: 🐚 init hermit
+        run: ./bin/hermit env -r >> $GITHUB_ENV
+      - name: ↗️ upload index
+        run: |
+          hermit search --json > index.json
+          gh release upload --clobber index index.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
